@@ -6,25 +6,9 @@
 <title>Tecla Adapta Lite – Multilingue e Pictogramas</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
-body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(to bottom right, #111827, #1f2937);
-    color: white;
-    min-height: 100vh;
-    padding: 1rem;
-}
-.button-style {
-    padding: 1rem;
-    border-radius: 0.75rem;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-}
-.button-style:hover { transform: scale(1.05); box-shadow: 0 8px 10px rgba(0,0,0,0.3); }
-.mic-active { animation: pulse-mic 1s infinite; }
-@keyframes pulse-mic { 0%,100%{box-shadow:0 0 0 0 rgba(52,152,219,0.7);} 70%{box-shadow:0 0 0 10px rgba(52,152,219,0);} }
+body { font-family:'Inter',sans-serif; background:linear-gradient(to bottom right,#111827,#1f2937); color:white; min-height:100vh; padding:1rem; }
+.button-style { padding:1rem; border-radius:0.75rem; color:white; font-weight:600; cursor:pointer; transition:all 0.2s ease-in-out; box-shadow:0 4px 6px rgba(0,0,0,0.2); }
+.button-style:hover { transform: scale(1.05); box-shadow:0 8px 10px rgba(0,0,0,0.3); }
 .card { background-color:#2a2a2a; border-radius:1rem; padding:1rem; margin-bottom:1rem; transition: all 0.3s; }
 .card:hover { transform: scale(1.02); box-shadow:0 8px 12px rgba(0,0,0,0.4);}
 </style>
@@ -68,50 +52,46 @@ Criado por Dala De Carvalho – Projeto DALA CURE OS | Linguagens adaptadas para
 </footer>
 
 <script>
-// Configurações
 let linguaVocalizacao = 'ckw';
 const linguasInfo = { ckw:{nome:'Cokwe',cor:'text-green-500'}, knd:{nome:'Kimbundo',cor:'text-yellow-400'}, mbu:{nome:'Umbundu',cor:'text-red-500'} };
+let frases = [];
 
-// Amostra de frases (para 500 basta expandir este array)
-const frases = [
-{pt:'Olá, como vai?',ckw:'Moyo wenu, kanawa?',knd:'Dizanga, uejinga uê?',mbu:'Moyo u wa, oku li ndati?',emoji:'👋'},
-{pt:'Eu te amo',ckw:'Na ku zanga',knd:'Ngi ku zola',mbu:'Ndi ku sole',emoji:'❤️'},
-{pt:'Quero comer',ckw:'Nguna zangue kulhia',knd:'Ngi zanda kulia',mbu:'Ndiongola liã',emoji:'🍽️'},
-{pt:'Obrigado(a)',ckw:'Naçakwila',knd:'Kutulenda',mbu:'Pandula',emoji:'🙏'},
-{pt:'Bom dia',ckw:'Moyo wenu',knd:'Dizanga',mbu:'Moyo u wa',emoji:'☀️'},
-// ...expanda até 500
-];
+// Carregar JSON externo
+fetch('frases.json')
+  .then(res => res.json())
+  .then(data => {
+      frases = data;
+      renderFrases();
+  })
+  .catch(err => console.error("Erro ao carregar JSON:", err));
 
-// Renderiza frases
-const container = document.getElementById('frases-container');
-frases.forEach((f, idx)=>{
-    const card = document.createElement('div');
-    card.className='card cursor-pointer';
-    card.innerHTML=`<span class="text-3xl">${f.emoji}</span><p class="mt-2 font-semibold text-white">${f.pt}</p>`;
-    card.onclick=()=>exibirFrase(f);
-    container.appendChild(card);
-});
+function renderFrases(){
+    const container = document.getElementById('frases-container');
+    container.innerHTML='';
+    frases.forEach(f=>{
+        const card=document.createElement('div');
+        card.className='card cursor-pointer';
+        card.innerHTML=`<span class="text-3xl">${f.emoji}</span><p class="mt-2 font-semibold text-white">${f.pt}</p>`;
+        card.onclick=()=>exibirFrase(f);
+        container.appendChild(card);
+    });
+}
 
-// Exibe frase traduzida
 function exibirFrase(f){
-    const output = document.getElementById('resposta');
+    const output=document.getElementById('resposta');
     output.innerHTML=`
         <div class="flex flex-col space-y-2">
             <p class="font-bold text-xl">Português:</p><p class="text-white">${f.pt}</p>
             <p class="font-bold ${linguasInfo.ckw.cor} text-lg">${linguasInfo.ckw.nome}: ${f.ckw}</p>
             <p class="font-bold ${linguasInfo.knd.cor} text-lg">${linguasInfo.knd.nome}: ${f.knd}</p>
-            <p class="font-bold ${linguasInfo.mbu.cor} text-lg">${linguasInfo.mbu.nome}: ${f.mbu}</p>
+            <p class="font-bold ${linguasInfo.mbu.cor} text-lg">${linguasInfo.mbu}</p>
         </div>
     `;
     falar(f[linguaVocalizacao]);
 }
 
-// Atualiza língua ativa
-function mudarLinguaVocalizacao(nova){
-    linguaVocalizacao=nova;
-}
+function mudarLinguaVocalizacao(nova){ linguaVocalizacao=nova; }
 
-// TTS
 function falar(texto){
     if('speechSynthesis' in window){
         window.speechSynthesis.cancel();
@@ -121,11 +101,9 @@ function falar(texto){
     }
 }
 
-// Input manual
 function handleTextInput(){
     const texto=document.getElementById('text-input').value.trim();
     if(!texto)return;
-    // Busca correspondência exata
     const f=frases.find(fr=>fr.pt.toLowerCase()===texto.toLowerCase());
     if(f) exibirFrase(f);
     else document.getElementById('resposta').innerHTML='<p class="text-red-500 font-bold">Frase não encontrada na base.</p>';
@@ -133,7 +111,7 @@ function handleTextInput(){
 }
 
 // Speech Recognition
-let recognition, isListening=false;
+let recognition,isListening=false;
 if(window.SpeechRecognition||window.webkitSpeechRecognition){
     const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
     recognition=new SR();
@@ -142,7 +120,7 @@ if(window.SpeechRecognition||window.webkitSpeechRecognition){
     recognition.lang='pt-PT';
     recognition.onstart=()=>{isListening=true;document.getElementById('mic-button').innerHTML='🔴 A ouvir...';};
     recognition.onend=()=>{isListening=false;document.getElementById('mic-button').innerHTML='🎤 Falar';};
-    recognition.onresult=(e)=>{handleTextInput();};
+    recognition.onresult=(e)=>{document.getElementById('text-input').value=e.results[0][0].transcript; handleTextInput();};
     recognition.onerror=(e)=>{console.error(e);};
 }
 function toggleMic(){ if(!recognition)return; isListening?recognition.stop():recognition.start();}
