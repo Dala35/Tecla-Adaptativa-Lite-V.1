@@ -1,138 +1,112 @@
- <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Tecla Adaptativa Lite – Linguagem Nacional</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        body {
-            background: linear-gradient(to bottom right, #111827, #1f2937);
-            font-family: 'Inter', sans-serif;
-        }
-        .button-style {
-            padding: 1rem;
-            font-size: 1rem;
-            border: none;
-            border-radius: 0.75rem;
-            color: white;
-            cursor: pointer;
-            transition: all 0.2s ease-in-out;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            font-weight: 600;
-        }
-        .button-style:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 10px rgba(0,0,0,0.3);
-        }
-        .mic-active {
-            animation: pulse-mic 1s infinite;
-        }
-        @keyframes pulse-mic {
-            0%,100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);}
-            70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);}
-        }
-    </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Tecla Adaptativa Lite – IA Aprendizado JSON</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body { background: linear-gradient(to bottom right,#111827,#1f2937); font-family:'Inter',sans-serif; color:white;}
+.container { max-width:800px; margin:2rem auto; padding:2rem; background:#1f2937; border-radius:1rem; box-shadow:0 8px 20px rgba(0,0,0,0.5);}
+.button { padding:0.75rem 1rem; border-radius:0.5rem; font-weight:600; cursor:pointer; transition:all 0.2s; }
+.button:hover { transform:scale(1.05); }
+.input { width:100%; padding:0.75rem; border-radius:0.5rem; margin-top:0.5rem; background:#2a2a2a; color:white; border:none;}
+.output { margin-top:1rem; background:#111827; padding:1rem; border-radius:0.75rem; min-height:5rem;}
+</style>
 </head>
-<body class="text-white min-h-screen flex flex-col items-center p-6 sm:p-10">
-    <div class="container bg-gray-800 rounded-3xl shadow-2xl max-w-3xl w-full p-6 sm:p-10 mt-6">
-        <h1 class="text-3xl font-bold mb-4 text-center text-primary-blue">🧠 Tecla Adaptativa Lite</h1>
-        <p class="text-base text-gray-300 text-center mb-6">
-            Escolha, dite ou clique. A vocalização e o destaque serão na língua selecionada.
-        </p>
+<body>
 
-        <!-- Linguagem -->
-        <div class="w-full mb-6">
-            <label for="lang-select" class="block text-sm font-medium text-gray-400 mb-2">Língua de Manifestação:</label>
-            <select id="lang-select" onchange="mudarLinguaVocalizacao(this.value)" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white appearance-none cursor-pointer">
-                <option value="ckw" selected>Cokwe (Chokwe)</option>
-                <option value="knd">Kimbundo</option>
-                <option value="mbu">Umbundu</option>
-            </select>
-        </div>
+<div class="container">
+  <h1 class="text-3xl font-bold text-center mb-4 text-blue-500">🧠 Tecla Adaptativa Lite – IA JSON</h1>
+  <p class="text-gray-300 mb-4 text-center">Digite ou fale a frase em português, a IA aprende e sugere traduções automáticas com emoji.</p>
 
-        <!-- Botões das frases geradas -->
-        <div id="option-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-            <!-- Botões vão ser criados dinamicamente -->
-        </div>
+  <input type="text" id="textInput" class="input" placeholder="Escreva ou fale a frase em Português..." />
+  <button class="button bg-blue-500 mt-2" onclick="processarFrase()">Traduzir / Aprender</button>
 
-        <!-- Output -->
-        <div id="resposta" class="output mt-10 bg-gray-900 border border-primary-blue/50 p-6 rounded-xl text-center text-lg font-medium min-h-[7rem] flex flex-col justify-center">
-            <p class="text-gray-400">Clique numa opção para manifestar a frase.</p>
-        </div>
-    </div>
+  <div class="output" id="output">Aqui aparecerá a tradução e emoji.</div>
 
-    <script>
-        let linguaVocalizacao = 'ckw';
+  <h2 class="text-xl font-semibold mt-6 mb-2 text-blue-400">Adicionar Nova Frase</h2>
+  <input type="text" id="newPT" class="input" placeholder="Frase em Português"/>
+  <input type="text" id="newCKW" class="input" placeholder="Tradução Cokwe"/>
+  <input type="text" id="newKND" class="input" placeholder="Tradução Kimbundo"/>
+  <input type="text" id="newMBU" class="input" placeholder="Tradução Umbundu"/>
+  <input type="text" id="newEmoji" class="input" placeholder="Emoji"/>
+  <button class="button bg-green-500 mt-2" onclick="adicionarFrase()">Adicionar ao JSON Local</button>
+</div>
 
-        const linguasInfo = {
-            ckw: { nome: 'Cokwe (Chokwe)', cor: 'text-green-500' },
-            knd: { nome: 'Kimbundo', cor: 'text-yellow-400' },
-            mbu: { nome: 'Umbundu', cor: 'text-red-500' },
-        };
+<script>
+// IA local e memória JSON
+let frases = [];
 
-        function mudarLinguaVocalizacao(novaLingua) {
-            linguaVocalizacao = novaLingua;
-        }
+// Carregar JSON local (simulação fetch)
+async function carregarJSON() {
+  try {
+    const res = await fetch('frases.json');
+    frases = await res.json();
+    console.log("JSON carregado:", frases.length, "frases");
+  } catch (e) {
+    console.warn("Não foi possível carregar o JSON, iniciando vazio");
+    frases = [];
+  }
+}
+carregarJSON();
 
-        async function carregarFrases() {
-            try {
-                const response = await fetch('frases.json');
-                const frases = await response.json();
-                gerarBotoes(frases);
-            } catch (err) {
-                console.error("Erro ao carregar o JSON:", err);
-                document.getElementById('resposta').innerText = "Erro ao carregar as frases.";
-            }
-        }
+// Função IA para processar frase
+function processarFrase() {
+  const input = document.getElementById('textInput').value.trim();
+  if (!input) return alert("Digite algo!");
+  
+  // Busca exata ou similar (simples)
+  let resultado = frases.find(f => f.pt.toLowerCase() === input.toLowerCase());
+  if (!resultado) {
+    // Busca aproximada (palavras)
+    const inputWords = input.toLowerCase().split(/\s+/);
+    resultado = frases.find(f => inputWords.some(w => f.pt.toLowerCase().includes(w)));
+  }
 
-        function gerarBotoes(frases) {
-            const grid = document.getElementById('option-grid');
-            grid.innerHTML = '';
-            frases.forEach((frase, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'button-style bg-gray-700 hover:bg-gray-600';
-                btn.innerHTML = `${frase.emoji} ${frase.pt}`;
-                btn.onclick = () => exibirEfalar(frase);
-                grid.appendChild(btn);
-            });
-        }
+  const output = document.getElementById('output');
+  if (resultado) {
+    output.innerHTML = `
+      <p><strong>Português:</strong> ${resultado.pt}</p>
+      <p><strong>Cokwe:</strong> ${resultado.ckw}</p>
+      <p><strong>Kimbundo:</strong> ${resultado.knd}</p>
+      <p><strong>Umbundu:</strong> ${resultado.mbu}</p>
+      <p><strong>Emoji:</strong> ${resultado.emoji}</p>
+    `;
+    falar(resultado[document.getElementById('langSelect')?.value || 'ckw']);
+  } else {
+    output.innerHTML = `<p class="text-yellow-400">Frase não encontrada. IA vai aprender se você adicionar.</p>`;
+  }
+}
 
-        function exibirEfalar(frase) {
-            const output = document.getElementById('resposta');
-            const destaque = (lang) => {
-                const isSelected = lang === linguaVocalizacao;
-                const color = linguasInfo[lang].cor;
-                const size = isSelected ? 'text-2xl font-extrabold' : 'text-lg font-semibold text-gray-300';
-                const tag = isSelected ? '(VOZ E DESTAQUE)' : '';
-                return `<p class="${size} ${color}">${frase[lang]} ${tag}</p>`;
-            };
+// Função para adicionar frase nova
+function adicionarFrase() {
+  const pt = document.getElementById('newPT').value.trim();
+  const ckw = document.getElementById('newCKW').value.trim();
+  const knd = document.getElementById('newKND').value.trim();
+  const mbu = document.getElementById('newMBU').value.trim();
+  const emoji = document.getElementById('newEmoji').value.trim();
+  if(!pt||!ckw||!knd||!mbu||!emoji) return alert("Preencha todos os campos");
 
-            output.innerHTML = `
-                <div class="flex flex-col space-y-2">
-                    <p class="text-sm text-gray-400">Português:</p>
-                    <strong class="text-xl text-white">${frase.pt}</strong>
-                    ${destaque('ckw')}
-                    ${destaque('knd')}
-                    ${destaque('mbu')}
-                </div>
-            `;
+  const nova = {pt,ckw,knd,mbu,emoji};
+  frases.push(nova);
+  alert("Frase adicionada à IA local com sucesso!");
+  document.getElementById('newPT').value = '';
+  document.getElementById('newCKW').value = '';
+  document.getElementById('newKND').value = '';
+  document.getElementById('newMBU').value = '';
+  document.getElementById('newEmoji').value = '';
+}
 
-            falar(frase[linguaVocalizacao]);
-        }
-
-        function falar(texto) {
-            if ('speechSynthesis' in window) {
-                const utter = new SpeechSynthesisUtterance(texto);
-                utter.lang = 'pt-AO';
-                utter.rate = 0.9;
-                window.speechSynthesis.cancel();
-                window.speechSynthesis.speak(utter);
-            }
-        }
-
-        // Carrega as frases ao abrir a página
-        carregarFrases();
-    </script>
+// Função TTS
+function falar(texto) {
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(texto);
+    utter.lang = 'pt-AO';
+    window.speechSynthesis.speak(utter);
+  }
+}
+</script>
 </body>
 </html>
