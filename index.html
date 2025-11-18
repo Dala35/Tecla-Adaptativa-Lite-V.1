@@ -1,28 +1,54 @@
-<!DOCTYPE html>
-<html lang="pt">
+<!DOCTYPE html><html lang="pt">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Tecla Adapta Lite – Interface Cognitiva Inclusiva</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="core.js"></script>
-<script src="app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tecla Adaptativa Lite V1 – Interface Cognitiva Inclusiva</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.4/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="bg-gray-900 text-white p-6 flex flex-col items-center min-h-screen">
+<body class="bg-gradient-to-br from-gray-900 to-gray-800 text-white font-sans min-h-screen flex flex-col items-center p-6 sm:p-10"><div class="container max-w-xl w-full bg-gray-800 rounded-3xl shadow-2xl p-6 sm:p-10 transform transition-all duration-500 hover:shadow-primary-blue/30">
+    <h1 class="text-3xl font-bold mb-4 text-center text-primary-blue">🧠 Tecla Adaptativa Lite</h1>
+    <p class="text-base text-gray-300 text-center mb-6">Escolhe, dita ou escreve. A vocalização e o destaque serão no idioma selecionado.</p>
 
-<h1 class="text-3xl font-bold text-primary-blue mb-4">🧠 Tecla Adapta Lite</h1>
+    <div class="flex flex-col gap-4 mb-8">
+        <div class="w-full">
+            <label for="lang-select" class="block text-sm font-medium text-gray-400 mb-2">Língua de Manifestação (Voz e Destaque):</label>
+            <select id="lang-select" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white cursor-pointer" onchange="changeLanguage(this.value)">
+                <option value="ckw" selected>Cokwe (Chokwe)</option>
+                <option value="knd">Kimbundo</option>
+                <option value="mbu">Umbundu</option>
+            </select>
+        </div>
 
-<select id="lang-select" onchange="mudarLingua(this.value)" class="mb-4 p-2 rounded bg-gray-700 text-white">
-    <option value="ckw">Cokwe (Chokwe)</option>
-    <option value="knd">Kimbundo</option>
-    <option value="mbu">Umbundu</option>
-</select>
+        <div class="flex gap-4">
+            <button id="mic-button" onclick="toggleSpeechRecognition()" class="flex-1 button-style bg-primary-blue hover:bg-blue-600 active:bg-blue-700 flex items-center justify-center py-3">🎤 Falar</button>
+            <button id="translate-button" onclick="translateInputText()" class="flex-1 button-style bg-gray-600 hover:bg-gray-700 active:bg-gray-800 flex items-center justify-center py-3">✍️ Traduzir Texto</button>
+        </div>
 
-<input type="text" id="text-input" placeholder="Escreva aqui..." class="w-full mb-4 p-2 rounded bg-gray-700 text-white">
-<button onclick="handleText()" class="mb-4 p-2 bg-primary-blue rounded">Traduzir / Falar</button>
-<button onclick="window.KizobaCore.toggleMic()" class="mb-4 p-2 bg-green-600 rounded">🎤 Falar</button>
+        <input type="text" id="text-input" placeholder="Escreva aqui a sua frase em Português..." class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-primary-blue focus:border-primary-blue transition duration-200" onkeydown="if(event.key==='Enter') translateInputText()">
+    </div>
 
-<div id="resposta" class="w-full p-4 rounded bg-gray-800 min-h-[5rem] text-center"></div>
+    <div class="option-grid grid grid-cols-2 sm:grid-cols-3 gap-4 mt-6">
+        <button onclick="selectExpression('ola')" class="button-style bg-green-600 hover:bg-green-700 active:bg-green-700">☀️ Olá / Bom dia</button>
+        <button onclick="selectExpression('como_estas')" class="button-style bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800">🤔 Como estás?</button>
+        <button onclick="selectExpression('estou_bem')" class="button-style bg-teal-600 hover:bg-teal-700 active:bg-teal-800">✅ Estou bem</button>
+        <button onclick="selectExpression('obrigado')" class="button-style bg-yellow-600 hover:bg-yellow-700 active:bg-yellow-800">🙏 Obrigado(a)</button>
+        <button onclick="selectExpression('eu_te_amo')" class="button-style bg-red-600 hover:bg-red-700 active:bg-red-800">❤️ Eu te amo</button>
+        <button onclick="selectExpression('quero_comer')" class="button-style bg-pink-600 hover:bg-pink-700 active:bg-pink-800">🍽️ Quero comer</button>
+    </div>
+
+    <div id="resposta" class="output mt-10 bg-gray-900 border border-primary-blue/50 p-6 rounded-xl text-center text-lg font-medium min-h-[7rem] flex flex-col justify-center transition duration-300">
+        <p class="text-gray-400">Clique numa opção, digite uma frase ou use o microfone para começar.</p>
+    </div>
+
+    <div id="aviso_traducao" class="text-xs text-primary-blue mt-4 text-center p-2 bg-primary-blue/20 rounded-lg hidden">
+        <p><strong>PROJETO DALA CURE OS:</strong> Traduções validadas pela co-criação.</p>
+    </div>
+</div>
+
+<footer class="mt-10 text-sm text-gray-400 text-center max-w-xl">Criado por Dala De Carvalho – Projeto DALA CURE OS. | <span class="text-primary-blue font-semibold">Linguagem adaptada para Cokwe, Kimbundo e Umbundu.</span></footer>
+
+<script type="module" src="core.js"></script>
 
 </body>
 </html>
