@@ -1,150 +1,138 @@
-<!DOCTYPE html>
+            <!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Tecla Adapta Lite – Multilingue e Pictogramas</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>
-body { font-family:'Inter',sans-serif; background:linear-gradient(to bottom right,#111827,#1f2937); color:white; min-height:100vh; padding:1rem; }
-.button-style { padding:1rem; border-radius:0.75rem; color:white; font-weight:600; cursor:pointer; transition:all 0.2s ease-in-out; box-shadow:0 4px 6px rgba(0,0,0,0.2); }
-.button-style:hover { transform: scale(1.05); box-shadow:0 8px 10px rgba(0,0,0,0.3); }
-.card { background-color:#2a2a2a; border-radius:1rem; padding:1rem; margin-bottom:1rem; transition: all 0.3s; }
-.card:hover { transform: scale(1.02); box-shadow:0 8px 12px rgba(0,0,0,0.4);}
-</style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Tecla Adaptativa Lite – Linguagem Nacional</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(to bottom right, #111827, #1f2937);
+            font-family: 'Inter', sans-serif;
+        }
+        .button-style {
+            padding: 1rem;
+            font-size: 1rem;
+            border: none;
+            border-radius: 0.75rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            font-weight: 600;
+        }
+        .button-style:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 10px rgba(0,0,0,0.3);
+        }
+        .mic-active {
+            animation: pulse-mic 1s infinite;
+        }
+        @keyframes pulse-mic {
+            0%,100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0.7);}
+            70% { box-shadow: 0 0 0 10px rgba(52, 152, 219, 0);}
+        }
+    </style>
 </head>
-<body class="flex flex-col items-center">
+<body class="text-white min-h-screen flex flex-col items-center p-6 sm:p-10">
+    <div class="container bg-gray-800 rounded-3xl shadow-2xl max-w-3xl w-full p-6 sm:p-10 mt-6">
+        <h1 class="text-3xl font-bold mb-4 text-center text-primary-blue">🧠 Tecla Adaptativa Lite</h1>
+        <p class="text-base text-gray-300 text-center mb-6">
+            Escolha, dite ou clique. A vocalização e o destaque serão na língua selecionada.
+        </p>
 
-<div class="max-w-3xl w-full">
-    <h1 class="text-4xl font-bold text-center text-primary-blue mb-6">🧠 Tecla Adapta Lite</h1>
-    <p class="text-center text-gray-300 mb-6">Escolha, dite ou escreva. As traduções e vocalização estarão no idioma selecionado.</p>
-
-    <!-- Seletor de Idioma -->
-    <div class="mb-6">
-        <label for="lang-select" class="block mb-2 text-gray-400 font-medium">Idioma de vocalização e destaque:</label>
-        <select id="lang-select" onchange="mudarLinguaVocalizacao(this.value)" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white cursor-pointer">
-            <option value="ckw" selected>Cokwe (Chokwe)</option>
-            <option value="knd">Kimbundo</option>
-            <option value="mbu">Umbundu</option>
-        </select>
-    </div>
-
-    <!-- Campo de Texto -->
-    <div class="flex gap-4 mb-6">
-        <input id="text-input" type="text" placeholder="Escreva ou cole uma frase..." class="flex-1 p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-primary-blue focus:border-primary-blue transition duration-200" onkeydown="if(event.key==='Enter') handleTextInput()">
-        <button onclick="handleTextInput()" class="button-style bg-gray-600 flex items-center justify-center"><span class="mr-2">✍️</span> Traduzir</button>
-    </div>
-
-    <!-- Botão de Microfone -->
-    <button id="mic-button" onclick="toggleMic()" class="button-style bg-primary-blue w-full flex items-center justify-center mb-6"><span class="text-2xl mr-2">🎤</span> Falar</button>
-
-    <!-- Lista de Frases com Emojis -->
-    <div id="frases-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
-
-    <!-- Output -->
-    <div id="resposta" class="mt-6 p-6 bg-gray-900 rounded-xl text-center min-h-[7rem]">
-        <p class="text-gray-400">Clique numa frase ou use o microfone/entrada de texto para começar.</p>
-    </div>
-</div>
-
-<footer class="mt-10 text-sm text-gray-400 text-center max-w-3xl">
-Criado por Dala De Carvalho – Projeto DALA CURE OS | Linguagens adaptadas para Cokwe, Kimbundo e Umbundu.
-</footer>
-
-<script>
-let linguaVocalizacao = 'ckw';
-const linguasInfo = { ckw:{nome:'Cokwe',cor:'text-green-500'}, knd:{nome:'Kimbundo',cor:'text-yellow-400'}, mbu:{nome:'Umbundu',cor:'text-red-500'} };
-let frases = [];
-
-// Carregar JSON externo
-fetch('frases.json')
-  .then(res => res.json())
-  .then(data => {
-      frases = data;
-      renderFrases();
-  {"pt":"Olá","ckw":"Moyo wenu","knd":"Dizanga","mbu":"Moyo u wa","emoji":"👋"},
-  {"pt":"Bom dia","ckw":"Moyo wenu","knd":"Dizanga","mbu":"Moyo u wa","emoji":"☀️"},
-  {"pt":"Boa tarde","ckw":"Moyo weno","knd":"Dizango","mbu":"Moyo u li","emoji":"🌇"},
-  {"pt":"Boa noite","ckw":"Moyo weno","knd":"Dizango","mbu":"Moyo u li","emoji":"🌙"},
-  {"pt":"Como estás?","ckw":"Kanawa?","knd":"Uejinga uê?","mbu":"Oku li ndati?","emoji":"🤔"},
-  {"pt":"Estou bem","ckw":"Ngulhi kanawa","knd":"Nga ri kilembu","mbu":"Ndi li pala","emoji":"✅"},
-  {"pt":"Obrigado(a)","ckw":"Naçakwila","knd":"Kutulenda","mbu":"Pandula","emoji":"🙏"},
-  {"pt":"Desculpa","ckw":"Ngulhi zola","knd":"Ngi pinda","mbu":"Ndipandula","emoji":"😅"},
-  {"pt":"Eu te amo","ckw":"Na ku zanga","knd":"Ngi ku zola","mbu":"Ndi ku sole","emoji":"❤️"},
-  {"pt":"Quero comer","ckw":"Nguna zangue kulhia","knd":"Ngi zanda kulia","mbu":"Ndiongola liã","emoji":"🍽️"},
-  {"pt":"Estou cansado","ckw":"Ngulhi kuta","knd":"Nga li kuyika","mbu":"Ndi li kuta","emoji":"😴"},
-  {"pt":"Vamos trabalhar","ckw":"Tuya kulhia","knd":"Tuila kumbi","mbu":"Tuyila kulia","emoji":"💼"},
-  {"pt":"Parabéns","ckw":"Wanda","knd":"Kutuba","mbu":"Pandu","emoji":"🎉"},
-  {"pt":"Feliz aniversário","ckw":"Wanda muoyo","knd":"Kutuba luzingu","mbu":"Pandu li ndeka","emoji":"🎂"},
-  {"pt":"Ajuda-me","ckw":"Sunga muoyo","knd":"Sunga nga","mbu":"Sunga ndi","emoji":"🆘"},
-  {"pt":"Onde estás?","ckw":"Weza wapi?","knd":"Uli wapi?","mbu":"Oli wapi?","emoji":"📍"},
-  {"pt":"Estou em casa","ckw":"Ngulhi ku nyumba","knd":"Nga li ku samba","mbu":"Ndi li ku ndyumba","emoji":"🏠"},
-  {"pt":"Vamos sair","ckw":"Tuya ku safu","knd":"Tuila ku senda","mbu":"Tuyila ku sala","emoji":"🚶"},
-  {"pt":"Estou feliz","ckw":"Ngulhi muoyo wanga","knd":"Nga li luzingu","mbu":"Ndi li muoyo","emoji":"😊"},
-  {"pt":"Estou triste","ckw":"Ngulhi ndetu","knd":"Nga li ndeta","mbu":"Ndi li ndetu","emoji":"😢"}
-  })
-  .catch(err => console.error("Erro ao carregar JSON:", err));
-
-function renderFrases(){
-    const container = document.getElementById('frases-container');
-    container.innerHTML='';
-    frases.forEach(f=>{
-        const card=document.createElement('div');
-        card.className='card cursor-pointer';
-        card.innerHTML=`<span class="text-3xl">${f.emoji}</span><p class="mt-2 font-semibold text-white">${f.pt}</p>`;
-        card.onclick=()=>exibirFrase(f);
-        container.appendChild(card);
-    });
-}
-
-function exibirFrase(f){
-    const output=document.getElementById('resposta');
-    output.innerHTML=`
-        <div class="flex flex-col space-y-2">
-            <p class="font-bold text-xl">Português:</p><p class="text-white">${f.pt}</p>
-            <p class="font-bold ${linguasInfo.ckw.cor} text-lg">${linguasInfo.ckw.nome}: ${f.ckw}</p>
-            <p class="font-bold ${linguasInfo.knd.cor} text-lg">${linguasInfo.knd.nome}: ${f.knd}</p>
-            <p class="font-bold ${linguasInfo.mbu.cor} text-lg">${linguasInfo.mbu}</p>
+        <!-- Linguagem -->
+        <div class="w-full mb-6">
+            <label for="lang-select" class="block text-sm font-medium text-gray-400 mb-2">Língua de Manifestação:</label>
+            <select id="lang-select" onchange="mudarLinguaVocalizacao(this.value)" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white appearance-none cursor-pointer">
+                <option value="ckw" selected>Cokwe (Chokwe)</option>
+                <option value="knd">Kimbundo</option>
+                <option value="mbu">Umbundu</option>
+            </select>
         </div>
-    `;
-    falar(f[linguaVocalizacao]);
-}
 
-function mudarLinguaVocalizacao(nova){ linguaVocalizacao=nova; }
+        <!-- Botões das frases geradas -->
+        <div id="option-grid" class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+            <!-- Botões vão ser criados dinamicamente -->
+        </div>
 
-function falar(texto){
-    if('speechSynthesis' in window){
-        window.speechSynthesis.cancel();
-        const msg = new SpeechSynthesisUtterance(texto);
-        msg.lang='pt-AO';
-        window.speechSynthesis.speak(msg);
-    }
-}
+        <!-- Output -->
+        <div id="resposta" class="output mt-10 bg-gray-900 border border-primary-blue/50 p-6 rounded-xl text-center text-lg font-medium min-h-[7rem] flex flex-col justify-center">
+            <p class="text-gray-400">Clique numa opção para manifestar a frase.</p>
+        </div>
+    </div>
 
-function handleTextInput(){
-    const texto=document.getElementById('text-input').value.trim();
-    if(!texto)return;
-    const f=frases.find(fr=>fr.pt.toLowerCase()===texto.toLowerCase());
-    if(f) exibirFrase(f);
-    else document.getElementById('resposta').innerHTML='<p class="text-red-500 font-bold">Frase não encontrada na base.</p>';
-    document.getElementById('text-input').value='';
-}
+    <script>
+        let linguaVocalizacao = 'ckw';
 
-// Speech Recognition
-let recognition,isListening=false;
-if(window.SpeechRecognition||window.webkitSpeechRecognition){
-    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-    recognition=new SR();
-    recognition.continuous=false;
-    recognition.interimResults=false;
-    recognition.lang='pt-PT';
-    recognition.onstart=()=>{isListening=true;document.getElementById('mic-button').innerHTML='🔴 A ouvir...';};
-    recognition.onend=()=>{isListening=false;document.getElementById('mic-button').innerHTML='🎤 Falar';};
-    recognition.onresult=(e)=>{document.getElementById('text-input').value=e.results[0][0].transcript; handleTextInput();};
-    recognition.onerror=(e)=>{console.error(e);};
-}
-function toggleMic(){ if(!recognition)return; isListening?recognition.stop():recognition.start();}
-</script>
+        const linguasInfo = {
+            ckw: { nome: 'Cokwe (Chokwe)', cor: 'text-green-500' },
+            knd: { nome: 'Kimbundo', cor: 'text-yellow-400' },
+            mbu: { nome: 'Umbundu', cor: 'text-red-500' },
+        };
 
+        function mudarLinguaVocalizacao(novaLingua) {
+            linguaVocalizacao = novaLingua;
+        }
+
+        async function carregarFrases() {
+            try {
+                const response = await fetch('frases.json');
+                const frases = await response.json();
+                gerarBotoes(frases);
+            } catch (err) {
+                console.error("Erro ao carregar o JSON:", err);
+                document.getElementById('resposta').innerText = "Erro ao carregar as frases.";
+            }
+        }
+
+        function gerarBotoes(frases) {
+            const grid = document.getElementById('option-grid');
+            grid.innerHTML = '';
+            frases.forEach((frase, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'button-style bg-gray-700 hover:bg-gray-600';
+                btn.innerHTML = `${frase.emoji} ${frase.pt}`;
+                btn.onclick = () => exibirEfalar(frase);
+                grid.appendChild(btn);
+            });
+        }
+
+        function exibirEfalar(frase) {
+            const output = document.getElementById('resposta');
+            const destaque = (lang) => {
+                const isSelected = lang === linguaVocalizacao;
+                const color = linguasInfo[lang].cor;
+                const size = isSelected ? 'text-2xl font-extrabold' : 'text-lg font-semibold text-gray-300';
+                const tag = isSelected ? '(VOZ E DESTAQUE)' : '';
+                return `<p class="${size} ${color}">${frase[lang]} ${tag}</p>`;
+            };
+
+            output.innerHTML = `
+                <div class="flex flex-col space-y-2">
+                    <p class="text-sm text-gray-400">Português:</p>
+                    <strong class="text-xl text-white">${frase.pt}</strong>
+                    ${destaque('ckw')}
+                    ${destaque('knd')}
+                    ${destaque('mbu')}
+                </div>
+            `;
+
+            falar(frase[linguaVocalizacao]);
+        }
+
+        function falar(texto) {
+            if ('speechSynthesis' in window) {
+                const utter = new SpeechSynthesisUtterance(texto);
+                utter.lang = 'pt-AO';
+                utter.rate = 0.9;
+                window.speechSynthesis.cancel();
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        // Carrega as frases ao abrir a página
+        carregarFrases();
+    </script>
 </body>
 </html>
