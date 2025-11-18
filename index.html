@@ -1,122 +1,152 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt">
 <head>
-<meta charset="UTF-8" />
+<meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Tecla Adapta Lite – Tradução Local</title>
-<!-- Tailwind CSS -->
+<title>Tecla Adapta Lite – Multilingue e Pictogramas</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<script>
-tailwind.config = {
-  theme: {
-    extend: {
-      colors: {
-        'primary-blue': '#3498db',
-        'dark-bg': '#1a1a1a',
-        'card-bg': '#2a2a2a',
-        'ckw-color': '#10b981',
-        'knd-color': '#f59e0b',
-        'mbu-color': '#ef4444'
-      },
-      fontFamily: { sans: ['Inter', 'sans-serif'] }
-    }
-  }
-}
-</script>
 <style>
-body { background: linear-gradient(to bottom right, #111827, #1f2937); font-family: 'Inter', sans-serif; }
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(to bottom right, #111827, #1f2937);
+    color: white;
+    min-height: 100vh;
+    padding: 1rem;
+}
+.button-style {
+    padding: 1rem;
+    border-radius: 0.75rem;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+.button-style:hover { transform: scale(1.05); box-shadow: 0 8px 10px rgba(0,0,0,0.3); }
 .mic-active { animation: pulse-mic 1s infinite; }
 @keyframes pulse-mic { 0%,100%{box-shadow:0 0 0 0 rgba(52,152,219,0.7);} 70%{box-shadow:0 0 0 10px rgba(52,152,219,0);} }
-.button-style { padding: 1rem; font-size: 1rem; border: none; border-radius: 0.75rem; color: white; cursor: pointer; transition: all 0.2s ease-in-out; box-shadow: 0 4px 6px rgba(0,0,0,0.2); font-weight:600; }
-.button-style:hover { transform: scale(1.05); box-shadow: 0 8px 10px rgba(0,0,0,0.3); }
+.card { background-color:#2a2a2a; border-radius:1rem; padding:1rem; margin-bottom:1rem; transition: all 0.3s; }
+.card:hover { transform: scale(1.02); box-shadow:0 8px 12px rgba(0,0,0,0.4);}
 </style>
 </head>
-<body class="text-white min-h-screen flex flex-col items-center p-6 sm:p-10">
+<body class="flex flex-col items-center">
 
-<div class="container bg-gray-800 rounded-3xl shadow-2xl max-w-xl w-full p-6 sm:p-10 mt-6 transform transition-all duration-500 hover:shadow-primary-blue/30">
+<div class="max-w-3xl w-full">
+    <h1 class="text-4xl font-bold text-center text-primary-blue mb-6">🧠 Tecla Adapta Lite</h1>
+    <p class="text-center text-gray-300 mb-6">Escolha, dite ou escreva. As traduções e vocalização estarão no idioma selecionado.</p>
 
-<h1 class="text-3xl font-bold mb-4 text-center text-primary-blue"><span class="mr-2">🧠</span> Tecla Adapta Lite</h1>
-<p class="text-base text-gray-300 text-center mb-6">Digite ou fale em Português. Cada palavra será traduzida localmente para as línguas nacionais selecionadas.</p>
+    <!-- Seletor de Idioma -->
+    <div class="mb-6">
+        <label for="lang-select" class="block mb-2 text-gray-400 font-medium">Idioma de vocalização e destaque:</label>
+        <select id="lang-select" onchange="mudarLinguaVocalizacao(this.value)" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white cursor-pointer">
+            <option value="ckw" selected>Cokwe (Chokwe)</option>
+            <option value="knd">Kimbundo</option>
+            <option value="mbu">Umbundu</option>
+        </select>
+    </div>
 
-<!-- Seleção de Idioma -->
-<div class="flex flex-col gap-4 mb-8">
-  <div class="w-full">
-    <label for="lang-select" class="block text-sm font-medium text-gray-400 mb-2">Idioma de Destaque (Voz e Cor):</label>
-    <select id="lang-select" onchange="mudarLinguaVocalizacao(this.value)" class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white cursor-pointer focus:ring-primary-blue focus:border-primary-blue">
-      <option value="ckw" selected>Cokwe</option>
-      <option value="knd">Kimbundo</option>
-      <option value="mbu">Umbundu</option>
-    </select>
-  </div>
+    <!-- Campo de Texto -->
+    <div class="flex gap-4 mb-6">
+        <input id="text-input" type="text" placeholder="Escreva ou cole uma frase..." class="flex-1 p-3 rounded-lg bg-gray-700 border border-gray-600 text-white placeholder-gray-400 focus:ring-primary-blue focus:border-primary-blue transition duration-200" onkeydown="if(event.key==='Enter') handleTextInput()">
+        <button onclick="handleTextInput()" class="button-style bg-gray-600 flex items-center justify-center"><span class="mr-2">✍️</span> Traduzir</button>
+    </div>
 
-  <div class="flex gap-4">
-    <button id="mic-button" onclick="iniciarReconhecimentoDeFala()" class="flex-1 button-style bg-primary-blue hover:bg-blue-600 active:bg-blue-700 flex items-center justify-center py-3"><span class="text-2xl mr-2">🎤</span> Falar</button>
-    <button onclick="traduzirTextoLocal()" class="flex-1 button-style bg-gray-600 hover:bg-gray-700 active:bg-gray-800 flex items-center justify-center py-3"><span class="text-2xl mr-2">✍️</span> Traduzir</button>
-  </div>
+    <!-- Botão de Microfone -->
+    <button id="mic-button" onclick="toggleMic()" class="button-style bg-primary-blue w-full flex items-center justify-center mb-6"><span class="text-2xl mr-2">🎤</span> Falar</button>
 
-  <input type="text" id="text-input" placeholder="Digite sua frase em Português..." class="w-full p-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-primary-blue focus:border-primary-blue transition duration-200" onkeydown="if(event.key==='Enter') traduzirTextoLocal()">
+    <!-- Lista de Frases com Emojis -->
+    <div id="frases-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+
+    <!-- Output -->
+    <div id="resposta" class="mt-6 p-6 bg-gray-900 rounded-xl text-center min-h-[7rem]">
+        <p class="text-gray-400">Clique numa frase ou use o microfone/entrada de texto para começar.</p>
+    </div>
 </div>
 
-<div id="resposta" class="output mt-10 bg-gray-900 border border-primary-blue/50 p-6 rounded-xl text-center text-lg font-medium min-h-[7rem] flex flex-col justify-center transition duration-300">
-<p class="text-gray-400">Digite, fale ou clique em Traduzir para começar.</p>
-</div>
-
-<footer class="mt-10 text-sm text-gray-400 text-center max-w-xl">
-Criado por Dala De Carvalho – Projeto DALA CURE OS | <span class="text-primary-blue font-semibold">Tradução local para Cokwe, Kimbundo e Umbundu.</span>
+<footer class="mt-10 text-sm text-gray-400 text-center max-w-3xl">
+Criado por Dala De Carvalho – Projeto DALA CURE OS | Linguagens adaptadas para Cokwe, Kimbundo e Umbundu.
 </footer>
 
 <script>
-// --- Configuração ---
+// Configurações
 let linguaVocalizacao = 'ckw';
-const linguasInfo = {
-  ckw: { nome:'Cokwe', cor:'ckw-color' },
-  knd: { nome:'Kimbundo', cor:'knd-color' },
-  mbu: { nome:'Umbundu', cor:'mbu-color' }
-};
+const linguasInfo = { ckw:{nome:'Cokwe',cor:'text-green-500'}, knd:{nome:'Kimbundo',cor:'text-yellow-400'}, mbu:{nome:'Umbundu',cor:'text-red-500'} };
 
-// --- Dicionário Local ---
-const dicionario = {
-  ola:'Moyo wenu','bom':'wenu','dia':'ndanda','como':'Kanawa','estas':'?','estou':'Ngulhi','bem':'kanawa',
-  obrigado:'Naçakwila','eu':'Na','te':'ku','amo':'zanga','quero':'Nguna','comer':'zangue kulhia'
-};
+// Amostra de frases (para 500 basta expandir este array)
+const frases = [
+{pt:'Olá, como vai?',ckw:'Moyo wenu, kanawa?',knd:'Dizanga, uejinga uê?',mbu:'Moyo u wa, oku li ndati?',emoji:'👋'},
+{pt:'Eu te amo',ckw:'Na ku zanga',knd:'Ngi ku zola',mbu:'Ndi ku sole',emoji:'❤️'},
+{pt:'Quero comer',ckw:'Nguna zangue kulhia',knd:'Ngi zanda kulia',mbu:'Ndiongola liã',emoji:'🍽️'},
+{pt:'Obrigado(a)',ckw:'Naçakwila',knd:'Kutulenda',mbu:'Pandula',emoji:'🙏'},
+{pt:'Bom dia',ckw:'Moyo wenu',knd:'Dizanga',mbu:'Moyo u wa',emoji:'☀️'},
+// ...expanda até 500
+];
 
-// --- Funções ---
-function mudarLinguaVocalizacao(novaLingua){linguaVocalizacao=novaLingua;const output=document.getElementById('resposta');output.innerHTML=`<p class="text-xl font-semibold text-primary-blue">Idioma de destaque alterado para: ${linguasInfo[novaLingua].nome}</p><p class="text-sm text-gray-400">Digite ou fale a próxima frase.</p>`;}
+// Renderiza frases
+const container = document.getElementById('frases-container');
+frases.forEach((f, idx)=>{
+    const card = document.createElement('div');
+    card.className='card cursor-pointer';
+    card.innerHTML=`<span class="text-3xl">${f.emoji}</span><p class="mt-2 font-semibold text-white">${f.pt}</p>`;
+    card.onclick=()=>exibirFrase(f);
+    container.appendChild(card);
+});
 
-function traduzirTextoLocal(){
-  const texto=document.getElementById('text-input').value.trim();
-  const output=document.getElementById('resposta');
-  if(!texto){output.innerHTML='<p class="text-xl text-red-500 font-semibold">Digite uma frase para traduzir.</p>';return;}
-  
-  const palavras=texto.split(/\s+/);
-  const traduzidas={pt:[],ckw:[],knd:[],mbu:[]};
-  palavras.forEach(p=>{
-    traduzidas.pt.push(p);
-    traduzidas.ckw.push(dicionario[p.toLowerCase()] || p);
-    traduzidas.knd.push(dicionario[p.toLowerCase()] || p);
-    traduzidas.mbu.push(dicionario[p.toLowerCase()] || p);
-  });
-
-  const exibir=(lang)=>{const isSelected=lang===linguaVocalizacao;const cor=linguasInfo[lang].cor;const textSize=isSelected?'text-3xl':'text-lg';const textColor=isSelected?`text-${cor}`:'text-gray-300';const fontStyle=isSelected? 'font-extrabold':'font-semibold';return`<div class="py-1"><p class="text-sm font-light text-gray-400">${linguasInfo[lang].nome}${isSelected?' (VOZ E DESTAQUE)':''}</p><em class="${textSize} ${textColor} ${fontStyle}">${traduzidas[lang].join(' ')}</em></div>`;};
-  
-  output.innerHTML=`<div class="flex flex-col space-y-4 text-left w-full mx-auto"><div class="border-b border-gray-700 pb-2"><p class="text-sm font-light text-gray-400">Português (Input)</p><strong class="text-xl text-white">${traduzidas.pt.join(' ')}</strong></div>${exibir('ckw')}${exibir('knd')}${exibir('mbu')}</div>`;
-  falar(traduzidas[linguaVocalizacao].join(' '));
-  document.getElementById('text-input').value='';
+// Exibe frase traduzida
+function exibirFrase(f){
+    const output = document.getElementById('resposta');
+    output.innerHTML=`
+        <div class="flex flex-col space-y-2">
+            <p class="font-bold text-xl">Português:</p><p class="text-white">${f.pt}</p>
+            <p class="font-bold ${linguasInfo.ckw.cor} text-lg">${linguasInfo.ckw.nome}: ${f.ckw}</p>
+            <p class="font-bold ${linguasInfo.knd.cor} text-lg">${linguasInfo.knd.nome}: ${f.knd}</p>
+            <p class="font-bold ${linguasInfo.mbu.cor} text-lg">${linguasInfo.mbu.nome}: ${f.mbu}</p>
+        </div>
+    `;
+    falar(f[linguaVocalizacao]);
 }
 
-function falar(texto){if('speechSynthesis'in window){window.speechSynthesis.cancel();const audio=new SpeechSynthesisUtterance(texto);const voices=window.speechSynthesis.getVoices();const ptVoice=voices.find(v=>v.lang.startsWith('pt-')||v.lang.startsWith('pt_'));if(ptVoice)audio.voice=ptVoice;audio.lang='pt-AO';audio.rate=0.9;window.speechSynthesis.speak(audio);}}
+// Atualiza língua ativa
+function mudarLinguaVocalizacao(nova){
+    linguaVocalizacao=nova;
+}
 
-// --- Reconhecimento de Fala ---
-let recognition,isListening=false;
+// TTS
+function falar(texto){
+    if('speechSynthesis' in window){
+        window.speechSynthesis.cancel();
+        const msg = new SpeechSynthesisUtterance(texto);
+        msg.lang='pt-AO';
+        window.speechSynthesis.speak(msg);
+    }
+}
+
+// Input manual
+function handleTextInput(){
+    const texto=document.getElementById('text-input').value.trim();
+    if(!texto)return;
+    // Busca correspondência exata
+    const f=frases.find(fr=>fr.pt.toLowerCase()===texto.toLowerCase());
+    if(f) exibirFrase(f);
+    else document.getElementById('resposta').innerHTML='<p class="text-red-500 font-bold">Frase não encontrada na base.</p>';
+    document.getElementById('text-input').value='';
+}
+
+// Speech Recognition
+let recognition, isListening=false;
 if(window.SpeechRecognition||window.webkitSpeechRecognition){
-const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
-recognition=new SpeechRecognition();recognition.continuous=false;recognition.interimResults=false;recognition.lang='pt-PT';
-recognition.onstart=()=>{isListening=true;const micButton=document.getElementById('mic-button');micButton.innerHTML='<span class="text-2xl mr-2">🔴</span> A Ouvir...';micButton.classList.add('mic-active');document.getElementById('resposta').innerHTML='<p class="text-xl text-primary-blue font-semibold animate-pulse">Aguarde a sua fala...</p>';};
-recognition.onend=()=>{isListening=false;const micButton=document.getElementById('mic-button');micButton.innerHTML='<span class="text-2xl mr-2">🎤</span> Falar';micButton.classList.remove('mic-active');};
-recognition.onresult=(event)=>{const transcript=event.results[0][0].transcript;document.getElementById('text-input').value=transcript;traduzirTextoLocal();};
-recognition.onerror=(event)=>{console.error('Erro de reconhecimento de fala:',event.error);document.getElementById('resposta').innerHTML=`<p class="text-xl text-red-500 font-semibold">Erro de Fala: ${event.error}</p>`;};
+    const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+    recognition=new SR();
+    recognition.continuous=false;
+    recognition.interimResults=false;
+    recognition.lang='pt-PT';
+    recognition.onstart=()=>{isListening=true;document.getElementById('mic-button').innerHTML='🔴 A ouvir...';};
+    recognition.onend=()=>{isListening=false;document.getElementById('mic-button').innerHTML='🎤 Falar';};
+    recognition.onresult=(e)=>{handleTextInput();};
+    recognition.onerror=(e)=>{console.error(e);};
 }
-function iniciarReconhecimentoDeFala(){if(!recognition){document.getElementById('resposta').innerHTML='<p class="text-xl text-red-500 font-semibold">Reconhecimento de fala indisponível.</p>';return;}isListening?recognition.stop():recognition.start();}
+function toggleMic(){ if(!recognition)return; isListening?recognition.stop():recognition.start();}
 </script>
+
 </body>
 </html>
